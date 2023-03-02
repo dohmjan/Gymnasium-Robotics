@@ -370,9 +370,9 @@ class PointMazeEnv(MazeEnv, EzPickle):
 
         obs, info = self.point_env.reset(seed=seed)
         obs_dict = self._get_obs(obs)
-        info["success"] = bool(
+        info["is_success"] = (
             np.linalg.norm(obs_dict["achieved_goal"] - self.goal) <= 0.45
-        )
+        ).astype(np.float32)
 
         return obs_dict, info
 
@@ -380,9 +380,9 @@ class PointMazeEnv(MazeEnv, EzPickle):
         obs, _, _, _, info = self.point_env.step(action)
         obs_dict = self._get_obs(obs)
 
-        info["success"] = bool(
+        info["is_success"] = (
             np.linalg.norm(obs_dict["achieved_goal"] - self.goal) <= 0.45
-        )
+        ).astype(np.float32)
         reward = self.compute_reward(obs_dict["achieved_goal"], self.goal, info)
 
         terminated = self.compute_terminated(obs_dict["achieved_goal"], self.goal, info)
