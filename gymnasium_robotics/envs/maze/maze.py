@@ -22,6 +22,11 @@ from gymnasium_robotics.core import GoalEnv
 from gymnasium_robotics.envs.maze.maps import COMBINED, GOAL, RESET, U_MAZE
 
 
+def goal_distance(goal_a, goal_b):
+    assert goal_a.shape == goal_b.shape
+    return np.linalg.norm(goal_a - goal_b, axis=-1)
+
+
 class Maze:
     r"""This class creates and holds information about the maze in the MuJoCo simulation.
 
@@ -348,11 +353,12 @@ class MazeEnv(GoalEnv):
 
     def compute_reward(
         self, achieved_goal: np.ndarray, desired_goal: np.ndarray, info
-    ) -> float:
+    ) -> np.ndarray:
+        d = goal_distance(achieved_goal, desired_goal)
         if self.reward_type == "dense":
-            return np.exp(-np.linalg.norm(desired_goal - achieved_goal))
+            return np.exp(-d)
         elif self.reward_type == "sparse":
-            return 1.0 if np.linalg.norm(achieved_goal - desired_goal) <= 0.45 else 0.0
+            return (d <= 0.45).astype(np.float32)
 
     def compute_terminated(
         self, achieved_goal: np.ndarray, desired_goal: np.ndarray, info
