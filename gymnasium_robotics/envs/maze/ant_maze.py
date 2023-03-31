@@ -278,6 +278,7 @@ class AntMazeEnv(MazeEnv, EzPickle):
         ant_obs, _, _, _, info = self.ant_env.step(action)
         obs = self._get_obs(ant_obs)
 
+        info["is_success"] = self._is_success(obs["achieved_goal"], self.goal)
         terminated = self.compute_terminated(obs["achieved_goal"], self.goal, info)
         truncated = self.compute_truncated(obs["achieved_goal"], self.goal, info)
 

@@ -386,6 +386,10 @@ class MazeEnv(GoalEnv):
     ) -> bool:
         return False
 
+    def _is_success(self, achieved_goal, desired_goal) -> np.ndarray:
+        d = goal_distance(achieved_goal, desired_goal)
+        return (d <= 0.45).astype(np.float32)
+
     def update_target_site_pos(self, pos):
         """Override this method to update the site qpos in the MuJoCo simulation
         after a new goal is selected. This is mainly for visualization purposes."""
